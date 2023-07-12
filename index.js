@@ -3,6 +3,9 @@ const app = express();
 const port = 8000;
 
 
+/*----------  Use Express router instead of app  ----------*/
+app.use('/', require('./routes/index'))
+
 app.listen(port, (err) =>{
     if(err){
         console.log(`Error in the running server: ${err}`);
