@@ -31,11 +31,11 @@ module.exports.create = (req, res) =>{
         return res.redirect('back');
     }
 
-    const user = async() =>{
+    const userCreate = async() =>{
         try{
-            const result = await User
+            const user = await User
             .findOne({email: req.body.email});
-            if(!result){
+            if(!user){
                 User.create(req.body);
                 return res.redirect('/users/sign_in')
             }
@@ -48,22 +48,43 @@ module.exports.create = (req, res) =>{
             return;
         }
     }
-    // User.findOne({email: req.body.email}, (err, user) =>{
-    //     if(err){
-    //         console.log('error in finding user in signing up');
-    //         return;
-    //     }
-    //     if(!user){
-    //         User.create(req.body, (err, user) =>{
-    //             if(err){
-    //                 console.log('error in creating user while signing up');
-    //                 return;
-    //             }
-    //             return res.redirect('/users/sign_in');
-    //         });
-    //     }else{
-    //         return res.redirect('back');
+    userCreate();
+}
 
-    user();
+
+/*----------  Sign in and Create a session for the user  ----------*/
+module.exports.createSession = (req, res) =>{
+    const userFound = async() =>{
+        try{
+            
+            /*----------  find the User  ----------*/
+            const user = await User
+            .findOne({email: req.body.email});
+            
+            /*----------  handle User Found  ----------*/
+            if(user){
+                
+                /*----------  handle Password which doesn't match  ----------*/
+                if(user.password != req.body.password){
+                    return res.redirect('back');
+                }
+                
+                /*----------  handle Session Creation  ----------*/
+                res.cookie('user_id', user.id);
+                return res.redirect('/users/profile');
+            }
+            else{
+                
+                /*----------  handle User Not Found  ----------*/
+                return res.redirect('back');
+                
+            }
+        }
+        catch(err){
+            console.log('error in finding user in signing in');
+            return;
+        }
+    }
+    userFound();
 }
 
