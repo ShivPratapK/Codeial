@@ -5,6 +5,13 @@ const port = 8000;
 const expressLayouts = require('express-ejs-layouts');
 const db = require('./config/mongoose');
 
+
+/*----------  Use for Session Cookie  ----------*/
+const session = require('express-session');
+const passport = require('passport');
+const passportLocal = require('./config/passport-local-strategy');
+
+
 app.use(express.urlencoded({extended: true}));
 
 
@@ -25,13 +32,24 @@ app.set('layout extractStyles', true);
 app.set('layout extractScripts', true);
 
 
-/*----------  Use Express router  ----------*/
-app.use('/', require('./routes/index'))
-
-
 /*----------  Set up the view engine  ----------*/
 app.set('view engine', 'ejs');
 app.set('views', './views');
+
+app.use(session({
+    name:'codeial',
+    //TODO
+    secret: 'blasomething',
+    saveUninitialized: false,
+    resave:false,
+    cookie:{maxAge: (1000*100*40)}
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+/*----------  Use Express router  ----------*/
+app.use('/', require('./routes/index'));
 
 
 app.listen(port, (err) =>{
